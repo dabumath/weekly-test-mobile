@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <title>주간고사 보안 연결</title>
+  </head>
+  <body>
+    <script>
+      (() => {
+        'use strict';
+        const CHANNEL = 'weekly-test-bridge-v1';
+        const BRIDGE_NONCE = <?!= JSON.stringify(bridgeNonce) ?>;
+        const ALLOWED_PARENT_ORIGIN = <?!= JSON.stringify(allowedParentOrigin) ?>;
+
+        function reply(message) {
+          window.parent.postMessage({ channel: CHANNEL, bridgeNonce: BRIDGE_NONCE, ...message }, ALLOWED_PARENT_ORIGIN);
+        }
+
+        window.addEventListener('message', (event) => {
+          if (event.source !== window.parent || event.origin !== ALLOWED_PARENT_ORIGIN) return;
+          const message = event.data;
+          if (!message || message.channel !== CHANNEL || message.bridgeNonce !== BRIDGE_NONCE) return;
+          if (typeof message.requestId !== 'string' || typeof message.action !== 'string') return;
+          google.script.run
+            .withSuccessHandler((result) => reply({ requestId: message.requestId, ...result }))
+            .withFailureHandler(() => reply({
+              requestId: message.requestId,
+              ok: false,
+              error: { code: 'BRIDGE_ERROR', message: '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.' }
+            }))
+            .handleApiRequest(message.action, message.payload || {}, message.requestId);
+        });
+
+        reply({ type: 'READY' });
+      })();
+    </script>
+  </body>
+</html>
