@@ -6,6 +6,8 @@ web/vite.config.js
 web/vite.config.d.ts
 .env
 .env.local
+.clasp.json
+.clasprc.json
 .DS_Store
 coverage/
 outputs/

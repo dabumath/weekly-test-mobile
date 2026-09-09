@@ -17,6 +17,25 @@ function configureAllowedParentOrigin() {
   ui.alert('허용할 웹사이트 주소를 저장했습니다.');
 }
 
+function configureDeploymentForAdmin(spreadsheetId, allowedOrigin) {
+  var safeSpreadsheetId = String(spreadsheetId || '').trim();
+  var safeOrigin = String(allowedOrigin || '').trim().replace(/\/$/, '');
+  if (!/^[A-Za-z0-9_-]{20,}$/.test(safeSpreadsheetId)) {
+    throw new Error('올바른 스프레드시트 ID를 입력해주세요.');
+  }
+  var secureOrigin = /^https:\/\/[A-Za-z0-9.-]+(?::\d+)?$/.test(safeOrigin);
+  var localOrigin = /^http:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?$/.test(safeOrigin);
+  if (!secureOrigin && !localOrigin) {
+    throw new Error('경로 없이 정확한 origin만 입력해주세요.');
+  }
+  initializeSecretsSilently_();
+  PropertiesService.getScriptProperties().setProperties({
+    SPREADSHEET_ID: safeSpreadsheetId,
+    ALLOWED_PARENT_ORIGIN: safeOrigin
+  }, false);
+  return { spreadsheetConfigured: true, allowedOrigin: safeOrigin };
+}
+
 function assertUniqueValues_(rows, field, label) {
   var seen = {};
   rows.forEach(function (row) {

@@ -140,7 +140,6 @@ function setupStudentPinHashesFromRoster() {
 }
 
 function setManualStudentPin() {
-  initializeSecretsSilently_();
   var ui = SpreadsheetApp.getUi();
   var nameResponse = ui.prompt(
     '테스트 계정 PIN 설정',
@@ -149,12 +148,6 @@ function setManualStudentPin() {
   );
   if (nameResponse.getSelectedButton() !== ui.Button.OK) return;
   var normalizedName = normalizeNameCore(nameResponse.getResponseText());
-  var matches = readRows_('students').filter(function (student) {
-    return isTrue_(student['사용 여부']) &&
-      String(student['원본 시트'] || '').trim() === '수동 테스트' &&
-      normalizeNameCore(student.normalized_name || student['학생명']) === normalizedName;
-  });
-  if (matches.length !== 1) throw new Error('수동 테스트 계정을 한 개만 찾을 수 있도록 학생 시트를 확인해주세요.');
 
   var pinResponse = ui.prompt(
     '확인번호 입력',
@@ -165,13 +158,31 @@ function setManualStudentPin() {
   var pin = String(pinResponse.getResponseText() || '').trim();
   if (!/^\d{4}$/.test(pin)) throw new Error('확인번호는 숫자 4자리여야 합니다.');
 
+  setManualStudentPinForAdmin(normalizedName, pin);
+  ui.alert('테스트 계정 PIN 해시를 저장했습니다. 평문 확인번호는 저장하지 않았습니다.');
+}
+
+function setManualStudentPinForAdmin(name, pin) {
+  initializeSecretsSilently_();
+  var normalizedName = normalizeNameCore(name);
+  var safePin = String(pin == null ? '' : pin).trim();
+  if (!normalizedName || !/^\d{4}$/.test(safePin)) {
+    throw new Error('테스트 계정 이름과 숫자 4자리 확인번호를 입력해주세요.');
+  }
+  var matches = readRows_('students').filter(function (student) {
+    return isTrue_(student['사용 여부']) &&
+      String(student['원본 시트'] || '').trim() === '수동 테스트' &&
+      normalizeNameCore(student.normalized_name || student['학생명']) === normalizedName;
+  });
+  if (matches.length !== 1) throw new Error('수동 테스트 계정을 한 개만 찾을 수 있도록 학생 시트를 확인해주세요.');
+
   updateObjectRow_('students', matches[0]._rowNumber, {
-    pin_hash: pinHash_(normalizedName, pin),
+    pin_hash: pinHash_(normalizedName, safePin),
     'PIN 상태': '설정 완료',
     normalized_name: normalizedName
   });
   SpreadsheetApp.flush();
-  ui.alert('테스트 계정 PIN 해시를 저장했습니다. 평문 확인번호는 저장하지 않았습니다.');
+  return { studentId: String(matches[0].student_id), pinConfigured: true };
 }
 
 function initializeSecretsSilently_() {
