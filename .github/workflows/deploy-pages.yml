@@ -30,6 +30,7 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm test
       - run: npm run typecheck
