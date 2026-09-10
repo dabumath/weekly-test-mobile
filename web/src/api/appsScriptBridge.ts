@@ -65,7 +65,11 @@ export class AppsScriptBridgeClient implements ApiClient {
     this.ready = new Promise((resolve, reject) => {
       const timer = window.setTimeout(() => reject(new ApiError('BRIDGE_TIMEOUT', '서버 연결 시간이 초과되었습니다.')), 20_000);
       const onMessage = (event: MessageEvent) => {
-        if (event.source !== this.iframe.contentWindow || !isAppsScriptOrigin(event.origin)) return;
+        // Apps Script HTML Service renders user code in a nested googleusercontent.com
+        // frame, so its WindowProxy differs from the outer iframe's contentWindow.
+        // The unguessable per-load nonce and the allow-listed Google origin identify
+        // the real bridge; subsequent messages are pinned to that exact source.
+        if (!event.source || !isAppsScriptOrigin(event.origin)) return;
         if (!isValidBridgeResponse(event.data) || event.data.type !== 'READY' || event.data.bridgeNonce !== this.nonce) return;
         this.trustedSource = event.source as WindowProxy;
         this.trustedOrigin = event.origin;

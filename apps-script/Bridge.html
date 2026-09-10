@@ -14,11 +14,11 @@
         const ALLOWED_PARENT_ORIGIN = <?!= JSON.stringify(allowedParentOrigin) ?>;
 
         function reply(message) {
-          window.parent.postMessage({ channel: CHANNEL, bridgeNonce: BRIDGE_NONCE, ...message }, ALLOWED_PARENT_ORIGIN);
+          window.top.postMessage({ channel: CHANNEL, bridgeNonce: BRIDGE_NONCE, ...message }, ALLOWED_PARENT_ORIGIN);
         }
 
         window.addEventListener('message', (event) => {
-          if (event.source !== window.parent || event.origin !== ALLOWED_PARENT_ORIGIN) return;
+          if (event.source !== window.top || event.origin !== ALLOWED_PARENT_ORIGIN) return;
           const message = event.data;
           if (!message || message.channel !== CHANNEL || message.bridgeNonce !== BRIDGE_NONCE) return;
           if (typeof message.requestId !== 'string' || typeof message.action !== 'string') return;
