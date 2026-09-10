@@ -303,16 +303,18 @@ export function App() {
     };
     return (
       <main className="screen answer-screen">
-        <Header eyebrow={exam.title} title={`${q.questionNo}번`} />
-        <div className="answer-status"><span>{q.points}점</span><span>{completed}/{exam.questionCount} 입력</span><button className="text-button" onClick={() => go('review')}>전체 답안</button></div>
-        <section className="answer-focus" aria-live="polite">
-          <p>선택한 답</p>
-          <strong>{answers[q.questionNo] ? circled[answers[q.questionNo]!] : '—'}</strong>
-        </section>
-        <nav className="step-nav" aria-label="문항 이동">
-          <button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))}>이전</button>
-          <button disabled={current === exam.questions.length - 1} onClick={() => setCurrent((v) => Math.min(exam.questions.length - 1, v + 1))}>다음</button>
-        </nav>
+        <div key={`answer-${q.questionNo}`} className="question-transition answer-question">
+          <Header eyebrow={exam.title} title={`${q.questionNo}번`} />
+          <div className="answer-status"><span>{q.points}점</span><span>{completed}/{exam.questionCount} 입력</span><button className="text-button" onClick={() => go('review')}>전체 답안</button></div>
+          <section className="answer-focus" aria-live="polite">
+            <p>선택한 답</p>
+            <strong>{answers[q.questionNo] ? circled[answers[q.questionNo]!] : '—'}</strong>
+          </section>
+          <nav className="step-nav" aria-label="문항 이동">
+            <button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))}>이전</button>
+            <button disabled={current === exam.questions.length - 1} onClick={() => setCurrent((v) => Math.min(exam.questions.length - 1, v + 1))}>다음</button>
+          </nav>
+        </div>
         <div className="answer-pad" aria-label="답안 선택">
           {[1,2,3,4,5].slice(0, exam.choiceCount).map((value) => <button key={value} className={answers[q.questionNo] === value ? 'selected' : ''} aria-label={`${value}번 선택`} onClick={() => selectAnswer(value)}>{circled[value]}</button>)}
           <button className="unanswered" onClick={() => selectAnswer(null)}>미응답</button>
@@ -352,18 +354,20 @@ export function App() {
     const options = q.isCorrect ? correctLabels : wrongLabels;
     return (
       <main className="screen reflection-screen">
-        <Header eyebrow={`${current + 1} / ${submission.questions.length}`} title={`${q.questionNo}번 · ${q.isCorrect ? '정답' : '오답'}`} />
-        <section className={q.isCorrect ? 'result-strip correct' : 'result-strip wrong'}>
-          <span>내 답 {q.studentAnswer ? circled[q.studentAnswer] : '미응답'}</span>
-          <span>정답 {circled[q.correctAnswer]}</span>
-          <strong>{q.points}점</strong>
-        </section>
-        <h2>어떻게 풀었나요?</h2>
-        <div className="reflection-options">
-          {options.map(([value, label]) => <ChoiceChip key={value} selected={reflections[q.questionNo]?.category === value} onClick={() => chooseReflection(q.questionNo, value)}>{label}</ChoiceChip>)}
+        <div key={`reflection-${q.questionNo}`} className="question-transition">
+          <Header eyebrow={`${current + 1} / ${submission.questions.length}`} title={`${q.questionNo}번 · ${q.isCorrect ? '정답' : '오답'}`} />
+          <section className={q.isCorrect ? 'result-strip correct' : 'result-strip wrong'}>
+            <span>내 답 {q.studentAnswer ? circled[q.studentAnswer] : '미응답'}</span>
+            <span>정답 {circled[q.correctAnswer]}</span>
+            <strong>{q.points}점</strong>
+          </section>
+          <h2>어떻게 풀었나요?</h2>
+          <div className="reflection-options">
+            {options.map(([value, label]) => <ChoiceChip key={value} selected={reflections[q.questionNo]?.category === value} onClick={() => chooseReflection(q.questionNo, value)}>{label}</ChoiceChip>)}
+          </div>
+          <p className="hint">선택하면 다음 문항으로 넘어갑니다.</p>
+          <nav className="step-nav"><button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))}>이전 문항</button><button onClick={() => current === submission.questions.length - 1 ? go('help') : setCurrent((v) => v + 1)}>건너뛰기</button></nav>
         </div>
-        <p className="hint">선택하면 다음 문항으로 넘어갑니다.</p>
-        <nav className="step-nav"><button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))}>이전 문항</button><button onClick={() => current === submission.questions.length - 1 ? go('help') : setCurrent((v) => v + 1)}>건너뛰기</button></nav>
         {mistakeQuestion !== null && (
           <div className="sheet-backdrop" role="presentation">
             <section className="reason-sheet" role="dialog" aria-modal="true" aria-label="실수 원인 선택">

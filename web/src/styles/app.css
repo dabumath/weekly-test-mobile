@@ -75,6 +75,7 @@ h2 { margin: 26px 0 12px; font-size: 19px; letter-spacing: -.25px; }
 .hero-card span { font-size: 13px; color: #6b7684; }
 
 .answer-screen { height: 100dvh; display: flex; flex-direction: column; padding-bottom: calc(160px + env(safe-area-inset-bottom)); overflow-y: auto; }
+.answer-question { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .answer-screen .screen-header { margin-bottom: 10px; }
 .answer-status { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 14px; color: #6b7684; font-size: 14px; }
 .text-button { justify-self: end; min-height: 44px; border: 0; background: transparent; color: #3182f6; font-weight: 700; }
@@ -102,6 +103,12 @@ h2 { margin: 26px 0 12px; font-size: 19px; letter-spacing: -.25px; }
 .answer-pad button { min-height: 54px; border: 0; border-radius: 15px; background: #f2f4f6; color: #333d4b; font-size: 27px; }
 .answer-pad button.selected { background: #3182f6; color: #fff; }
 .answer-pad .unanswered { grid-column: 1 / -1; min-height: 42px; font-size: 14px; color: #6b7684; }
+.answer-pad button:active, .choice-chip:active, .reason-grid button:active { transform: scale(.96); }
+
+.question-transition {
+  animation: question-enter .24s cubic-bezier(.22, 1, .36, 1) both;
+  will-change: transform, opacity;
+}
 
 .answer-list { display: grid; gap: 6px; }
 .answer-list button {
@@ -165,6 +172,15 @@ h2 { margin: 26px 0 12px; font-size: 19px; letter-spacing: -.25px; }
 .spinner { width: 34px; height: 34px; margin: 0 auto; border: 3px solid #e5e8eb; border-top-color: #3182f6; border-radius: 50%; animation: spin .8s linear infinite; }
 .bridge-frame { position: fixed; width: 1px; height: 1px; left: -10000px; top: -10000px; border: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes question-enter {
+  from { opacity: .22; transform: translate3d(18px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-transition, .spinner { animation: none; }
+  .answer-pad button:active, .choice-chip:active, .reason-grid button:active { transform: none; }
+}
 
 @media (max-height: 700px) {
   .screen-header { margin-bottom: 16px; }
@@ -177,4 +193,3 @@ h2 { margin: 26px 0 12px; font-size: 19px; letter-spacing: -.25px; }
   body { padding: 18px 0; }
   .screen { min-height: calc(100dvh - 36px); border-radius: 28px; box-shadow: 0 18px 50px rgba(15,23,42,.08); }
 }
-
