@@ -66,6 +66,7 @@ h2 { margin: 26px 0 12px; font-size: 19px; letter-spacing: -.25px; }
 .field input { height: 54px; }
 .field textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
 .legal-copy { margin: 24px 2px 0; color: #8b95a1; font-size: 13px; line-height: 1.55; word-break: keep-all; }
+.legal-copy span { display: block; }
 .mock-note { color: #8b95a1; text-align: center; font-size: 12px; }
 .error { color: #d22030; background: #fff0f1; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.5; }
 

@@ -486,7 +486,7 @@ function LoginPage({ onLogin, error, busy }: { onLogin: (name: string, pin: stri
         {error && <p className="error" role="alert">{error}</p>}
         <button className="primary" disabled={busy || !name.trim() || pin.length !== 4}>{busy ? '확인 중…' : '로그인'}</button>
       </form>
-      <p className="legal-copy">이름과 확인번호는 학원 내부 학생을 구분하기 위한 간단한 확인 절차입니다.<br />강한 본인 인증 수단은 아닙니다.</p>
+      <p className="legal-copy"><span>이름·확인번호는 학원 내 학생 구분 절차이며,</span><span>강한 본인 인증 수단은 아닙니다.</span></p>
       {apiMode === 'mock' && <p className="mock-note">목업 모드 · 확인번호 1234</p>}
     </main>
   );
