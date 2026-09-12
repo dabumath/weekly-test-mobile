@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, apiMode } from './api';
 import { ApiError } from './api/apiClient';
+import { getAnswerSelectionDestination } from './answerNavigation';
 import type {
   ExamDetail,
   GradedSubmission,
@@ -297,8 +298,13 @@ export function App() {
       setAnswers(next);
       patchDraft({ answers: next });
       if (value !== null) {
-        const later = exam.questions.findIndex((item, index) => index > current && next[item.questionNo] == null);
-        if (later >= 0) setCurrent(later);
+        const destination = getAnswerSelectionDestination(
+          exam.questions.map((item) => item.questionNo),
+          next,
+          current,
+        );
+        if (destination === 'review') go('review');
+        else if (destination !== null) setCurrent(destination);
       }
     };
     return (
