@@ -5,12 +5,14 @@ function validateOverallReflection_(overall) {
     if (input.length > 12) throw apiError_('INVALID_INPUT', field + ' 항목이 너무 많습니다.');
     return input.map(function (item) { return requireStringCore(item, field, 100); });
   }
+  var nextAction = String(value.nextAction == null ? '' : value.nextAction).trim();
+  if (nextAction.length > 200) throw apiError_('INVALID_INPUT', '다음 시험 행동이 너무 깁니다.');
   var freeNote = String(value.freeNote == null ? '' : value.freeNote).trim();
   if (freeNote.length > 500) throw apiError_('INVALID_INPUT', '메모가 너무 깁니다.');
   return {
     strengths: cleanList(value.strengths || [], '잘한 점'),
     regrets: cleanList(value.regrets || [], '아쉬운 점'),
-    nextAction: requireStringCore(value.nextAction, '다음 시험 행동', 200),
+    nextAction: nextAction,
     freeNote: freeNote
   };
 }

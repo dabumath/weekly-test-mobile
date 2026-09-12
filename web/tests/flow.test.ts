@@ -25,7 +25,7 @@ describe('final-submit-only student flow', () => {
     const overall = {
       strengths: ['끝까지 집중했다'],
       regrets: ['검산하지 못했다'],
-      nextAction: '마지막 5분은 검산에 사용한다.',
+      nextAction: '',
       freeNote: '',
     };
     const result = await client.submitReflection(

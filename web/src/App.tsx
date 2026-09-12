@@ -431,10 +431,10 @@ export function App() {
         <div className="tag-wrap">{strengthLabels.map((label) => <ChoiceChip key={label} selected={overall.strengths.includes(label)} onClick={() => toggle('strengths', label)}>{label}</ChoiceChip>)}</div>
         <h2>아쉬운 점</h2>
         <div className="tag-wrap">{regretLabels.map((label) => <ChoiceChip key={label} selected={overall.regrets.includes(label)} onClick={() => toggle('regrets', label)}>{label}</ChoiceChip>)}</div>
-        <label className="field"><span>다음 시험에서 지킬 행동 <b>필수</b></span><textarea maxLength={200} value={overall.nextAction} onChange={(e) => { const next = { ...overall, nextAction: e.target.value }; setOverall(next); patchDraft({ overall: next }); }} placeholder="예: 마지막 5분은 검산에 사용하겠다." /></label>
+        <label className="field"><span>다음 시험에서 지킬 행동 <small>선택</small></span><textarea maxLength={200} value={overall.nextAction} onChange={(e) => { const next = { ...overall, nextAction: e.target.value }; setOverall(next); patchDraft({ overall: next }); }} placeholder="예: 마지막 5분은 검산에 사용하겠다." /></label>
         <label className="field"><span>메모 <small>선택</small></span><textarea maxLength={500} value={overall.freeNote || ''} onChange={(e) => { const next = { ...overall, freeNote: e.target.value }; setOverall(next); patchDraft({ overall: next }); }} placeholder="남기고 싶은 내용을 적어주세요." /></label>
         {error && <p className="error">{error}</p>}
-        <div className="bottom-actions"><button className="primary" disabled={busy || !overall.nextAction.trim()} onClick={() => void submitFinalReflection()}>{busy ? '저장 중…' : '복기 최종 제출'}</button></div>
+        <div className="bottom-actions"><button className="primary" disabled={busy} onClick={() => void submitFinalReflection()}>{busy ? '저장 중…' : '복기 최종 제출'}</button></div>
       </main>
     );
   }

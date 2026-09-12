@@ -118,7 +118,6 @@ export class MockApiClient implements ApiClient {
     if (!submission || submission.submissionId !== submissionId) throw new ApiError('SUBMISSION_NOT_FOUND', '제출 정보를 불러오지 못했습니다.');
     const issue = validateReflectionCompletion(submission.questions, items);
     if (issue) throw new ApiError('INVALID_INPUT', issue);
-    if (!overall.nextAction.trim()) throw new ApiError('INVALID_INPUT', '다음 시험 행동을 입력해주세요.');
     const score = calculateReflectionScore(submission.questions, items);
     finalResult = {
       ...submission,
